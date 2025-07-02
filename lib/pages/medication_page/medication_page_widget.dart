@@ -463,7 +463,7 @@ class _MedicationPageWidgetState extends State<MedicationPageWidget> {
                                       Text(
                                         valueOrDefault<String>(
                                           dateTimeFormat(
-                                              "yMd",
+                                              "d/M/y",
                                               listViewMedicationsRecord
                                                   .dosageStart),
                                           ' Start Date',

@@ -5,7 +5,7 @@
 
 
     <application
-        android:label="Stroke Predictor App"
+        android:label="HealTrack"
         tools:replace="android:label"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">

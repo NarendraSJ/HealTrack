@@ -15,3 +15,5 @@ export '/pages/profile_details/profile_details_widget.dart'
     show ProfileDetailsWidget;
 export '/pages/home/home_widget.dart' show HomeWidget;
 export '/pages/contact_page2/contact_page2_widget.dart' show ContactPage2Widget;
+export '/admin/admin_home/admin_home_widget.dart' show AdminHomeWidget;
+export '/userdetails/userdetails_widget.dart' show UserdetailsWidget;

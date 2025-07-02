@@ -7,8 +7,8 @@ import 'schema/util/firestore_util.dart';
 
 import 'schema/users_record.dart';
 import 'schema/medications_record.dart';
-import 'schema/medicines_record.dart';
 import 'schema/real_time_values_record.dart';
+import 'schema/data_storage_record.dart';
 
 export 'dart:async' show StreamSubscription;
 export 'package:cloud_firestore/cloud_firestore.dart' hide Order;
@@ -19,8 +19,8 @@ export 'schema/util/schema_util.dart';
 
 export 'schema/users_record.dart';
 export 'schema/medications_record.dart';
-export 'schema/medicines_record.dart';
 export 'schema/real_time_values_record.dart';
+export 'schema/data_storage_record.dart';
 
 /// Functions to query UsersRecords (as a Stream and as a Future).
 Future<int> queryUsersRecordCount({
@@ -96,46 +96,6 @@ Future<List<MedicationsRecord>> queryMedicationsRecordOnce({
       singleRecord: singleRecord,
     );
 
-/// Functions to query MedicinesRecords (as a Stream and as a Future).
-Future<int> queryMedicinesRecordCount({
-  DocumentReference? parent,
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-}) =>
-    queryCollectionCount(
-      MedicinesRecord.collection(parent),
-      queryBuilder: queryBuilder,
-      limit: limit,
-    );
-
-Stream<List<MedicinesRecord>> queryMedicinesRecord({
-  DocumentReference? parent,
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-  bool singleRecord = false,
-}) =>
-    queryCollection(
-      MedicinesRecord.collection(parent),
-      MedicinesRecord.fromSnapshot,
-      queryBuilder: queryBuilder,
-      limit: limit,
-      singleRecord: singleRecord,
-    );
-
-Future<List<MedicinesRecord>> queryMedicinesRecordOnce({
-  DocumentReference? parent,
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-  bool singleRecord = false,
-}) =>
-    queryCollectionOnce(
-      MedicinesRecord.collection(parent),
-      MedicinesRecord.fromSnapshot,
-      queryBuilder: queryBuilder,
-      limit: limit,
-      singleRecord: singleRecord,
-    );
-
 /// Functions to query RealTimeValuesRecords (as a Stream and as a Future).
 Future<int> queryRealTimeValuesRecordCount({
   Query Function(Query)? queryBuilder,
@@ -168,6 +128,43 @@ Future<List<RealTimeValuesRecord>> queryRealTimeValuesRecordOnce({
     queryCollectionOnce(
       RealTimeValuesRecord.collection,
       RealTimeValuesRecord.fromSnapshot,
+      queryBuilder: queryBuilder,
+      limit: limit,
+      singleRecord: singleRecord,
+    );
+
+/// Functions to query DataStorageRecords (as a Stream and as a Future).
+Future<int> queryDataStorageRecordCount({
+  Query Function(Query)? queryBuilder,
+  int limit = -1,
+}) =>
+    queryCollectionCount(
+      DataStorageRecord.collection,
+      queryBuilder: queryBuilder,
+      limit: limit,
+    );
+
+Stream<List<DataStorageRecord>> queryDataStorageRecord({
+  Query Function(Query)? queryBuilder,
+  int limit = -1,
+  bool singleRecord = false,
+}) =>
+    queryCollection(
+      DataStorageRecord.collection,
+      DataStorageRecord.fromSnapshot,
+      queryBuilder: queryBuilder,
+      limit: limit,
+      singleRecord: singleRecord,
+    );
+
+Future<List<DataStorageRecord>> queryDataStorageRecordOnce({
+  Query Function(Query)? queryBuilder,
+  int limit = -1,
+  bool singleRecord = false,
+}) =>
+    queryCollectionOnce(
+      DataStorageRecord.collection,
+      DataStorageRecord.fromSnapshot,
       queryBuilder: queryBuilder,
       limit: limit,
       singleRecord: singleRecord,

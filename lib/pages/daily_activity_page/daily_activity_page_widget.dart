@@ -1,10 +1,12 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -57,7 +59,70 @@ class _DailyActivityPageWidgetState extends State<DailyActivityPageWidget> {
           ),
         ),
         singleRecord: true,
-      ),
+      )..listen((snapshot) {
+          List<RealTimeValuesRecord> dailyActivityPageRealTimeValuesRecordList =
+              snapshot;
+          final dailyActivityPageRealTimeValuesRecord =
+              dailyActivityPageRealTimeValuesRecordList.isNotEmpty
+                  ? dailyActivityPageRealTimeValuesRecordList.first
+                  : null;
+          if (_model.dailyActivityPagePreviousSnapshot != null &&
+              !const ListEquality(RealTimeValuesRecordDocumentEquality())
+                  .equals(dailyActivityPageRealTimeValuesRecordList,
+                      _model.dailyActivityPagePreviousSnapshot)) {
+            () async {
+              await DataStorageRecord.collection
+                  .doc()
+                  .set(createDataStorageRecordData(
+                    heartRate: dailyActivityPageRealTimeValuesRecord?.heartRate,
+                    humidity: dailyActivityPageRealTimeValuesRecord?.humidity,
+                    posture: dailyActivityPageRealTimeValuesRecord?.posture,
+                    speed: dailyActivityPageRealTimeValuesRecord?.speed,
+                    spo2: dailyActivityPageRealTimeValuesRecord?.spo2,
+                    temperature:
+                        dailyActivityPageRealTimeValuesRecord?.temperature,
+                    xPos: dailyActivityPageRealTimeValuesRecord?.xPos,
+                    currentDate: getCurrentTimestamp,
+                    userRef: currentUserReference,
+                    stepCount: functions
+                        .stepsCounter(
+                            dailyActivityPageRealTimeValuesRecord?.xPos,
+                            FFAppState().todaysStepCount,
+                            dailyActivityPageRealTimeValuesRecord?.currentDate,
+                            FFAppState().previousX,
+                            getCurrentTimestamp)
+                        .lastOrNull,
+                  ));
+              _model.pgLoadQuery = await queryRealTimeValuesRecordOnce(
+                queryBuilder: (realTimeValuesRecord) =>
+                    realTimeValuesRecord.where(
+                  'user_ref',
+                  isEqualTo: currentUserReference?.id,
+                ),
+                singleRecord: true,
+              ).then((s) => s.firstOrNull);
+              FFAppState().prevCount = functions
+                  .stepsCounter(
+                      _model.pgLoadQuery?.xPos,
+                      FFAppState().prevCount.elementAtOrNull(1),
+                      FFAppState().storedDate,
+                      FFAppState().prevCount.elementAtOrNull(0),
+                      getCurrentTimestamp)
+                  .toList()
+                  .cast<double>();
+              safeSetState(() {});
+              _model.apiResult1rz = await GetSleepCall.call(
+                hr: dailyActivityPageRealTimeValuesRecord?.heartRate,
+                spo2: dailyActivityPageRealTimeValuesRecord?.spo2,
+                temp: dailyActivityPageRealTimeValuesRecord?.temperature,
+                hum: dailyActivityPageRealTimeValuesRecord?.humidity,
+              );
+
+              safeSetState(() {});
+            }();
+          }
+          _model.dailyActivityPagePreviousSnapshot = snapshot;
+        }),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
@@ -522,7 +587,12 @@ class _DailyActivityPageWidgetState extends State<DailyActivityPageWidget> {
                                       ),
                                 ),
                                 Text(
-                                  'undefined',
+                                  valueOrDefault<String>(
+                                    GetSleepCall.apiResult(
+                                      (_model.apiResult1rz?.jsonBody ?? ''),
+                                    ),
+                                    'Moderate',
+                                  ),
                                   style: FlutterFlowTheme.of(context)
                                       .bodyMedium
                                       .override(
@@ -584,16 +654,16 @@ class _DailyActivityPageWidgetState extends State<DailyActivityPageWidget> {
                                       20.0, 0.0, 0.0, 0.0),
                                   child: Text(
                                     formatNumber(
-                                      functions.stepsCounter(
-                                          dailyActivityPageRealTimeValuesRecord
-                                              ?.xPos,
-                                          FFAppState()
-                                              .todaysStepCount
-                                              .toDouble(),
-                                          FFAppState().storedDate,
-                                          0.0,
-                                          dailyActivityPageRealTimeValuesRecord!
-                                              .currentDate!),
+                                      functions
+                                          .stepsCounter(
+                                              dailyActivityPageRealTimeValuesRecord
+                                                  ?.xPos,
+                                              FFAppState().todaysStepCount,
+                                              dailyActivityPageRealTimeValuesRecord
+                                                  ?.currentDate,
+                                              FFAppState().previousX,
+                                              getCurrentTimestamp)
+                                          .firstOrNull,
                                       formatType: FormatType.custom,
                                       format: '##,###',
                                       locale: '',
@@ -660,7 +730,7 @@ class _DailyActivityPageWidgetState extends State<DailyActivityPageWidget> {
                                 Text(
                                   valueOrDefault<String>(
                                     dailyActivityPageRealTimeValuesRecord
-                                        .posture,
+                                        ?.posture,
                                     'posture_value',
                                   ),
                                   style: FlutterFlowTheme.of(context)

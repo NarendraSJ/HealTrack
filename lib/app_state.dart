@@ -17,15 +17,21 @@ class FFAppState extends ChangeNotifier {
   Future initializePersistedState() async {
     prefs = await SharedPreferences.getInstance();
     _safeInit(() {
+      _prevCount =
+          prefs.getStringList('ff_prevCount')?.map(double.parse).toList() ??
+              _prevCount;
+    });
+    _safeInit(() {
+      _todaysStepCount =
+          prefs.getDouble('ff_todaysStepCount') ?? _todaysStepCount;
+    });
+    _safeInit(() {
       _previousX = prefs.getDouble('ff_previousX') ?? _previousX;
     });
     _safeInit(() {
       _storedDate = prefs.containsKey('ff_storedDate')
           ? DateTime.fromMillisecondsSinceEpoch(prefs.getInt('ff_storedDate')!)
           : _storedDate;
-    });
-    _safeInit(() {
-      _todaysStepCount = prefs.getInt('ff_todaysStepCount') ?? _todaysStepCount;
     });
     _safeInit(() {
       _userName = prefs.getString('ff_userName') ?? _userName;
@@ -51,6 +57,54 @@ class FFAppState extends ChangeNotifier {
 
   late SharedPreferences prefs;
 
+  List<double> _prevCount = [0.0, 0.0];
+  List<double> get prevCount => _prevCount;
+  set prevCount(List<double> value) {
+    _prevCount = value;
+    prefs.setStringList(
+        'ff_prevCount', value.map((x) => x.toString()).toList());
+  }
+
+  void addToPrevCount(double value) {
+    prevCount.add(value);
+    prefs.setStringList(
+        'ff_prevCount', _prevCount.map((x) => x.toString()).toList());
+  }
+
+  void removeFromPrevCount(double value) {
+    prevCount.remove(value);
+    prefs.setStringList(
+        'ff_prevCount', _prevCount.map((x) => x.toString()).toList());
+  }
+
+  void removeAtIndexFromPrevCount(int index) {
+    prevCount.removeAt(index);
+    prefs.setStringList(
+        'ff_prevCount', _prevCount.map((x) => x.toString()).toList());
+  }
+
+  void updatePrevCountAtIndex(
+    int index,
+    double Function(double) updateFn,
+  ) {
+    prevCount[index] = updateFn(_prevCount[index]);
+    prefs.setStringList(
+        'ff_prevCount', _prevCount.map((x) => x.toString()).toList());
+  }
+
+  void insertAtIndexInPrevCount(int index, double value) {
+    prevCount.insert(index, value);
+    prefs.setStringList(
+        'ff_prevCount', _prevCount.map((x) => x.toString()).toList());
+  }
+
+  double _todaysStepCount = 0.0;
+  double get todaysStepCount => _todaysStepCount;
+  set todaysStepCount(double value) {
+    _todaysStepCount = value;
+    prefs.setDouble('ff_todaysStepCount', value);
+  }
+
   double _previousX = 0.0;
   double get previousX => _previousX;
   set previousX(double value) {
@@ -65,13 +119,6 @@ class FFAppState extends ChangeNotifier {
     value != null
         ? prefs.setInt('ff_storedDate', value.millisecondsSinceEpoch)
         : prefs.remove('ff_storedDate');
-  }
-
-  int _todaysStepCount = 0;
-  int get todaysStepCount => _todaysStepCount;
-  set todaysStepCount(int value) {
-    _todaysStepCount = value;
-    prefs.setInt('ff_todaysStepCount', value);
   }
 
   String _userName = '';

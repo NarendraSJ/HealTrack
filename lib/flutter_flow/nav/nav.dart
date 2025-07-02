@@ -76,13 +76,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
       errorBuilder: (context, state) =>
-          appStateNotifier.loggedIn ? HomeWidget() : SignupWidget(),
+          appStateNotifier.loggedIn ? HomeWidget() : SignInWidget(),
       routes: [
         FFRoute(
           name: '_initialize',
           path: '/',
           builder: (context, _) =>
-              appStateNotifier.loggedIn ? HomeWidget() : SignupWidget(),
+              appStateNotifier.loggedIn ? HomeWidget() : SignInWidget(),
         ),
         FFRoute(
           name: MedicationPageWidget.routeName,
@@ -140,6 +140,23 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: ContactPage2Widget.routeName,
           path: ContactPage2Widget.routePath,
           builder: (context, params) => ContactPage2Widget(),
+        ),
+        FFRoute(
+          name: AdminHomeWidget.routeName,
+          path: AdminHomeWidget.routePath,
+          builder: (context, params) => AdminHomeWidget(),
+        ),
+        FFRoute(
+          name: UserdetailsWidget.routeName,
+          path: UserdetailsWidget.routePath,
+          builder: (context, params) => UserdetailsWidget(
+            userRefAdmin: params.getParam(
+              'userRefAdmin',
+              ParamType.DocumentReference,
+              isList: false,
+              collectionNamePath: ['users'],
+            ),
+          ),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -310,7 +327,7 @@ class FFRoute {
 
           if (requireAuth && !appStateNotifier.loggedIn) {
             appStateNotifier.setRedirectLocationIfUnset(state.uri.toString());
-            return '/signup';
+            return '/signIn';
           }
           return null;
         },

@@ -314,6 +314,22 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                         email: _model.emailAddressTextController.text,
                         context: context,
                       );
+                      await showDialog(
+                        context: context,
+                        builder: (alertDialogContext) {
+                          return AlertDialog(
+                            title: Text('Alert'),
+                            content: Text('Password Reset Mail Sent'),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(alertDialogContext),
+                                child: Text('Ok'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     text: 'Send Link',
                     options: FFButtonOptions(

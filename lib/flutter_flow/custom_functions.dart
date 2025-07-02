@@ -12,26 +12,33 @@ import '/backend/backend.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '/auth/firebase_auth/auth_util.dart';
 
-double stepsCounter(
+List<double> stepsCounter(
   double? currentX,
   double? todaysStepCount,
   DateTime? storedDate,
   double? previousX,
   DateTime currentDate,
 ) {
-  // If same day, increment step count
+// If same day, increment step count
   if (storedDate != null &&
       storedDate.year == currentDate.year &&
       storedDate.month == currentDate.month &&
       storedDate.day == currentDate.day) {
     todaysStepCount = todaysStepCount! + (currentX! - previousX!).abs() / 0.5;
     previousX = currentX;
-    return todaysStepCount;
+    return [previousX, todaysStepCount];
   } else {
     // New day: reset step count to 1
     storedDate = currentDate;
     todaysStepCount = (currentX! - previousX!).abs() / 0.5;
     previousX = currentX;
-    return todaysStepCount;
+    return [previousX, todaysStepCount];
   }
+}
+
+List<double> stepCount(
+  double xPos,
+  double todaysStep,
+) {
+  return [xPos, todaysStep];
 }
