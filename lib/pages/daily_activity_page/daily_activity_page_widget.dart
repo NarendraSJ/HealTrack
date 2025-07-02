@@ -71,28 +71,6 @@ class _DailyActivityPageWidgetState extends State<DailyActivityPageWidget> {
                   .equals(dailyActivityPageRealTimeValuesRecordList,
                       _model.dailyActivityPagePreviousSnapshot)) {
             () async {
-              await DataStorageRecord.collection
-                  .doc()
-                  .set(createDataStorageRecordData(
-                    heartRate: dailyActivityPageRealTimeValuesRecord?.heartRate,
-                    humidity: dailyActivityPageRealTimeValuesRecord?.humidity,
-                    posture: dailyActivityPageRealTimeValuesRecord?.posture,
-                    speed: dailyActivityPageRealTimeValuesRecord?.speed,
-                    spo2: dailyActivityPageRealTimeValuesRecord?.spo2,
-                    temperature:
-                        dailyActivityPageRealTimeValuesRecord?.temperature,
-                    xPos: dailyActivityPageRealTimeValuesRecord?.xPos,
-                    currentDate: getCurrentTimestamp,
-                    userRef: currentUserReference,
-                    stepCount: functions
-                        .stepsCounter(
-                            dailyActivityPageRealTimeValuesRecord?.xPos,
-                            FFAppState().todaysStepCount,
-                            dailyActivityPageRealTimeValuesRecord?.currentDate,
-                            FFAppState().previousX,
-                            getCurrentTimestamp)
-                        .lastOrNull,
-                  ));
               _model.pgLoadQuery = await queryRealTimeValuesRecordOnce(
                 queryBuilder: (realTimeValuesRecord) =>
                     realTimeValuesRecord.where(
@@ -117,6 +95,56 @@ class _DailyActivityPageWidgetState extends State<DailyActivityPageWidget> {
                 temp: dailyActivityPageRealTimeValuesRecord?.temperature,
                 hum: dailyActivityPageRealTimeValuesRecord?.humidity,
               );
+
+              if ((_model.apiResult1rz?.succeeded ?? true)) {
+                await currentUserReference!.update(createUsersRecordData());
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Sleep Score Can\'t be Fetched',
+                      style: TextStyle(
+                        color: FlutterFlowTheme.of(context).primaryText,
+                      ),
+                    ),
+                    duration: Duration(milliseconds: 4000),
+                    backgroundColor: FlutterFlowTheme.of(context).secondary,
+                  ),
+                );
+              }
+
+              await DataStorageRecord.collection
+                  .doc()
+                  .set(createDataStorageRecordData(
+                    heartRate: dailyActivityPageRealTimeValuesRecord?.heartRate,
+                    humidity: dailyActivityPageRealTimeValuesRecord?.humidity,
+                    posture: dailyActivityPageRealTimeValuesRecord?.posture,
+                    speed: dailyActivityPageRealTimeValuesRecord?.speed,
+                    spo2: dailyActivityPageRealTimeValuesRecord?.spo2,
+                    temperature:
+                        dailyActivityPageRealTimeValuesRecord?.temperature,
+                    xPos: dailyActivityPageRealTimeValuesRecord?.xPos,
+                    currentDate: getCurrentTimestamp,
+                    userRef: currentUserReference,
+                    stepCount: functions
+                        .stepsCounter(
+                            dailyActivityPageRealTimeValuesRecord?.xPos,
+                            FFAppState().todaysStepCount,
+                            dailyActivityPageRealTimeValuesRecord?.currentDate,
+                            FFAppState().previousX,
+                            getCurrentTimestamp)
+                        .lastOrNull,
+                    sleepQuality: GetSleepCall.apiResult(
+                      (_model.apiResult1rz?.jsonBody ?? ''),
+                    ),
+                  ));
+              FFAppState().sleepScore = valueOrDefault<String>(
+                GetSleepCall.apiResult(
+                  (_model.apiResult1rz?.jsonBody ?? ''),
+                ),
+                'Moderate',
+              );
+              FFAppState().update(() {});
 
               safeSetState(() {});
             }();

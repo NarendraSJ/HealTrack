@@ -70,11 +70,6 @@ class DataStorageRecord extends FirestoreRecord {
   DocumentReference? get userRef => _userRef;
   bool hasUserRef() => _userRef != null;
 
-  // "sleep_quality" field.
-  double? _sleepQuality;
-  double get sleepQuality => _sleepQuality ?? 0.0;
-  bool hasSleepQuality() => _sleepQuality != null;
-
   // "sleep_time" field.
   double? _sleepTime;
   double get sleepTime => _sleepTime ?? 0.0;
@@ -84,6 +79,11 @@ class DataStorageRecord extends FirestoreRecord {
   double? _stepCount;
   double get stepCount => _stepCount ?? 0.0;
   bool hasStepCount() => _stepCount != null;
+
+  // "sleep_quality" field.
+  String? _sleepQuality;
+  String get sleepQuality => _sleepQuality ?? '';
+  bool hasSleepQuality() => _sleepQuality != null;
 
   void _initializeFields() {
     _heartRate = castToType<int>(snapshotData['heart_rate']);
@@ -97,9 +97,9 @@ class DataStorageRecord extends FirestoreRecord {
     _zPos = castToType<double>(snapshotData['z_pos']);
     _currentDate = snapshotData['currentDate'] as DateTime?;
     _userRef = snapshotData['user_ref'] as DocumentReference?;
-    _sleepQuality = castToType<double>(snapshotData['sleep_quality']);
     _sleepTime = castToType<double>(snapshotData['sleep_time']);
     _stepCount = castToType<double>(snapshotData['step_count']);
+    _sleepQuality = snapshotData['sleep_quality'] as String?;
   }
 
   static CollectionReference get collection =>
@@ -148,9 +148,9 @@ Map<String, dynamic> createDataStorageRecordData({
   double? zPos,
   DateTime? currentDate,
   DocumentReference? userRef,
-  double? sleepQuality,
   double? sleepTime,
   double? stepCount,
+  String? sleepQuality,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -165,9 +165,9 @@ Map<String, dynamic> createDataStorageRecordData({
       'z_pos': zPos,
       'currentDate': currentDate,
       'user_ref': userRef,
-      'sleep_quality': sleepQuality,
       'sleep_time': sleepTime,
       'step_count': stepCount,
+      'sleep_quality': sleepQuality,
     }.withoutNulls,
   );
 
@@ -190,9 +190,9 @@ class DataStorageRecordDocumentEquality implements Equality<DataStorageRecord> {
         e1?.zPos == e2?.zPos &&
         e1?.currentDate == e2?.currentDate &&
         e1?.userRef == e2?.userRef &&
-        e1?.sleepQuality == e2?.sleepQuality &&
         e1?.sleepTime == e2?.sleepTime &&
-        e1?.stepCount == e2?.stepCount;
+        e1?.stepCount == e2?.stepCount &&
+        e1?.sleepQuality == e2?.sleepQuality;
   }
 
   @override
@@ -208,9 +208,9 @@ class DataStorageRecordDocumentEquality implements Equality<DataStorageRecord> {
         e?.zPos,
         e?.currentDate,
         e?.userRef,
-        e?.sleepQuality,
         e?.sleepTime,
-        e?.stepCount
+        e?.stepCount,
+        e?.sleepQuality
       ]);
 
   @override

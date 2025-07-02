@@ -203,6 +203,12 @@ class FFAppState extends ChangeNotifier {
   set standingDuration(int value) {
     _standingDuration = value;
   }
+
+  String _sleepScore = '';
+  String get sleepScore => _sleepScore;
+  set sleepScore(String value) {
+    _sleepScore = value;
+  }
 }
 
 void _safeInit(Function() initializeField) {
