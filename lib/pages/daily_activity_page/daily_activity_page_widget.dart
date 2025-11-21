@@ -368,7 +368,7 @@ class _DailyActivityPageWidgetState extends State<DailyActivityPageWidget> {
                                     dailyActivityPageRealTimeValuesRecord
                                         ?.heartRate
                                         .toString(),
-                                    'Heart rate',
+                                    '1',
                                   ),
                                   style: FlutterFlowTheme.of(context)
                                       .bodyMedium
