@@ -394,10 +394,11 @@ class _SignInWidgetState extends State<SignInWidget>
                                           filled: true,
                                           fillColor: Color(0xFFF1F4F8),
                                           suffixIcon: InkWell(
-                                            onTap: () => safeSetState(
-                                              () => _model.passwordVisibility =
-                                                  !_model.passwordVisibility,
-                                            ),
+                                            onTap: () async {
+                                              safeSetState(() => _model
+                                                      .passwordVisibility =
+                                                  !_model.passwordVisibility);
+                                            },
                                             focusNode:
                                                 FocusNode(skipTraversal: true),
                                             child: Icon(
